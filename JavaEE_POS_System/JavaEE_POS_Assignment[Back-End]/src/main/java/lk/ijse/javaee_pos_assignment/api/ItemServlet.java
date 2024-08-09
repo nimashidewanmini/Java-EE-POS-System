@@ -11,6 +11,8 @@ import lk.ijse.javaee_pos_assignment.bo.BOFactory;
 import lk.ijse.javaee_pos_assignment.bo.custom.impl.ItemBOImpl;
 import lk.ijse.javaee_pos_assignment.dto.ItemDTO;
 import lk.ijse.javaee_pos_assignment.util.DataValidateController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -24,10 +26,13 @@ public class ItemServlet extends HttpServlet {
     DataSource pool;
     ItemBOImpl itemBO = BOFactory.getInstance().getBO(BOFactory.BOTypes.ITEM);
 
+    static Logger logger = LoggerFactory.getLogger(ItemServlet.class);
+
     @Override
     public void init() throws ServletException {
         try {
-            pool = (DataSource) new InitialContext().lookup("java:/comp/env/jdbc/TestDB");
+            pool = (DataSource) new InitialContext().lookup("java:/comp/env/jdbc/pos_assignment");
+            logger.debug("DB Connection Initialized : {} ",pool);
 //            System.out.println(pool.getConnection());
 
         } catch (Exception e) {
@@ -49,6 +54,7 @@ public class ItemServlet extends HttpServlet {
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
                     resp.getWriter().write("Failed to retrieve customers !!");
+                    logger.error("Failed to retrieve customers !!");
                 }
 
             } catch (Exception e) {
@@ -89,15 +95,18 @@ public class ItemServlet extends HttpServlet {
                             if (searchItem != null) {
                                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
                                 resp.getWriter().write("Item Id Already exits !!");
+                                logger.error("Item Id Already exits !!");
 
                             } else {
                                 if (itemBO.saveItem(itemDTO, connection)) {
                                     resp.setStatus(HttpServletResponse.SC_CREATED);
                                     resp.getWriter().write("Item saved successfully !!");
+                                    logger.info("Item saved successfully !!");
 
                                 } else {
                                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                     resp.getWriter().write("Failed to save item !!");
+                                    logger.error("Failed to save item !!");
                                 }
 
                             }
@@ -105,21 +114,24 @@ public class ItemServlet extends HttpServlet {
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             resp.getWriter().write("Item type doesn't match !!");
-
+                            logger.error("Item type doesn't match !!");
                         }
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         resp.getWriter().write("Item name doesn't match !!");
+                        logger.error("Item name doesn't match !!");
 
                     }
 
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     resp.getWriter().write("Item id doesn't match !!");
+                    logger.error("Item id doesn't match !!");
                 }
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("NO Data to proceed !!");
+                logger.error("NO Data to proceed !!");
             }
 
 
@@ -150,18 +162,22 @@ public class ItemServlet extends HttpServlet {
                     if (itemBO.deleteItem(req.getParameter("id"), connection)) {
                         resp.setStatus(HttpServletResponse.SC_CREATED);
                         resp.getWriter().write("Item Deleted successfully !!");
+                        logger.info("Item Deleted successfully !!");
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
                         resp.getWriter().write("Failed to delete item !!");
+                        logger.error("Failed to delete item !!");
                     }
 
                 } else {
                     resp.setStatus(HttpServletResponse.SC_CONFLICT);
                     resp.getWriter().write("Item Id doesn't exits !!");
+                    logger.error("Item Id doesn't exits !!");
                 }
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("Item id doesn't match !!");
+                logger.error("Item id doesn't match !!");
             }
 
 
@@ -189,35 +205,42 @@ public class ItemServlet extends HttpServlet {
                                 if (itemBO.updateItem(itemDTO, connection)) {
                                     resp.setStatus(HttpServletResponse.SC_CREATED);
                                     resp.getWriter().write("Item updated successfully !!");
+                                    logger.info("Item updated successfully !!");
 
                                 } else {
                                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                     resp.getWriter().write("Failed to update item !!");
+                                    logger.error("Failed to update item !!");
                                 }
 
                             } else {
                                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
                                 resp.getWriter().write("Item Id doesn't exits !!");
+                                logger.error("Item Id doesn't exits !!");
                             }
 
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             resp.getWriter().write("Item type doesn't match !!");
+                            logger.error("Item type doesn't match !!");
                         }
 
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         resp.getWriter().write("Item name doesn't match !!");
+                        logger.error("Item name doesn't match !!");
                     }
 
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     resp.getWriter().write("Item id doesn't match !!");
+                    logger.error("Item id doesn't match !!");
                 }
 
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("NO Data to proceed !!");
+                logger.error("NO Data to proceed !!");
             }
 
 

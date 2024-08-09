@@ -35,10 +35,11 @@ public class CustomerServlet extends HttpServlet {
     public void init() {
 
         try {
-            pool = (DataSource) new InitialContext().lookup("java:/comp/env/jdbc/TestDB");
+            pool = (DataSource) new InitialContext().lookup("java:/comp/env/jdbc/pos_assignment");
             System.out.println(pool.getConnection());
             logger.debug("DB Connection Initialized: {}",pool);
         } catch (Exception e) {
+            logger.error("DB Connection Initialized failed",e);
             System.out.println(e);
         }
 
@@ -72,37 +73,44 @@ public class CustomerServlet extends HttpServlet {
                                     } else {
                                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                         resp.getWriter().write("Failed to save customer !!");
+                                        logger.error("Failed to save customer !!");
                                     }
                                 }
 
                             } else {
                                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                 resp.getWriter().write("Customer salary doesn't match !!");
+                                logger.error("Customer salary doesn't match !!");
                             }
 
                         } else {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             resp.getWriter().write("Customer address doesn't match !!");
+                            logger.error("Customer address doesn't match !!");
                         }
 
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         resp.getWriter().write("Customer name doesn't match !!");
+                        logger.error("Customer name doesn't match !!");
                     }
 
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     resp.getWriter().write("Customer Id doesn't match !!");
+                    logger.error("Customer Id doesn't match !!");
                 }
 
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("NO Data to proceed !!");
+                logger.error("NO Data to proceed !!");
             }
 
         } catch (SQLException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
             resp.getWriter().write("Server Error");
+            logger.error("Server Error");
             System.out.println(e);
         }
 
@@ -122,6 +130,7 @@ public class CustomerServlet extends HttpServlet {
                 } else {
                     response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
                     response.getWriter().write("Failed to retrieve customers !!");
+                    logger.error("Failed to retrieve customers !!");
                 }
             } catch (Exception e) {
                 System.out.println(e);
@@ -161,23 +170,28 @@ public class CustomerServlet extends HttpServlet {
                     if (customerBO.deleteCustomer(req.getParameter("id"), connection)) {
                         resp.setStatus(HttpServletResponse.SC_CREATED);
                         resp.getWriter().write("Customer Deleted successfully !!");
+                        logger.info("Customer Deleted successfully !!");
                     } else {
                         resp.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
                         resp.getWriter().write("Failed to delete customer !!");
+                        logger.error("Failed to delete customer !!");
                     }
 
                 } else {
                     resp.setStatus(HttpServletResponse.SC_CONFLICT);
                     resp.getWriter().write("This Customer id doesn't exits  !!");
+                    logger.error("This Customer id doesn't exits  !!");
                 }
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("Customer Id doesn't match !!");
+                logger.error("Customer Id doesn't match !!");
             }
         } catch (Exception e) {
             System.out.println(e);
             resp.getWriter().write(HttpServletResponse.SC_BAD_GATEWAY);
             resp.getWriter().write("Server Error !!");
+            logger.error("Server Error !!");
         }
 
     }
@@ -204,43 +218,52 @@ public class CustomerServlet extends HttpServlet {
                                     if (customerBO.updateCustomer(customerDTO, connection)) {
                                         resp.setStatus(HttpServletResponse.SC_CREATED);
                                         resp.getWriter().write("Customer updated successfully !!");
+                                        logger.info("Customer updated successfully !!");
                                     } else {
                                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                         resp.getWriter().write("Failed to update customer !!");
+                                        logger.error("Failed to update customer !!");
                                     }
                                 } else {
                                     resp.setStatus(HttpServletResponse.SC_CONFLICT);
                                     resp.getWriter().write("This Customer id doesn't exits  !!");
+                                    logger.error("This Customer id doesn't exits  !!");
                                 }
 
                             } else {
                                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
                                 resp.getWriter().write("This Customer salary doesn't match  !!");
+                                logger.error("This Customer salary doesn't match  !!");
                             }
 
                         } else {
                             resp.setStatus(HttpServletResponse.SC_CONFLICT);
                             resp.getWriter().write("This Customer address doesn't match  !!");
+                            logger.error("This Customer address doesn't match  !!");
                         }
                     } else {
                         resp.setStatus(HttpServletResponse.SC_CONFLICT);
                         resp.getWriter().write("This Customer name doesn't match  !!");
+                        logger.error("This Customer name doesn't match  !!");
                     }
 
                 } else {
                     resp.setStatus(HttpServletResponse.SC_CONFLICT);
                     resp.getWriter().write("This Customer id doesn't match  !!");
+                    logger.error("This Customer id doesn't match  !!");
                 }
 
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("NO Data to proceed !!");
+                logger.error("NO Data to proceed !!");
             }
 
         } catch (Exception e) {
             System.out.println(e);
             resp.getWriter().write(HttpServletResponse.SC_BAD_GATEWAY);
             resp.getWriter().write("Server Error !!");
+            logger.error("Server Error !!");
         }
 
     }

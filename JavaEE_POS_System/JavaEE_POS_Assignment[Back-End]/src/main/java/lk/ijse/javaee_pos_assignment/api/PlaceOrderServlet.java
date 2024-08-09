@@ -12,6 +12,8 @@ import lk.ijse.javaee_pos_assignment.bo.custom.impl.PlaceOrderBOImpl;
 import lk.ijse.javaee_pos_assignment.dto.CustomerDTO;
 import lk.ijse.javaee_pos_assignment.dto.ItemDTO;
 import lk.ijse.javaee_pos_assignment.dto.OrderDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -25,10 +27,13 @@ public class PlaceOrderServlet extends HttpServlet {
     DataSource pool;
     PlaceOrderBOImpl placeOrderBO = BOFactory.getInstance().getBO(BOFactory.BOTypes.PLACE_ORDER);
 
+    static Logger logger = LoggerFactory.getLogger(PlaceOrderServlet.class);
+
     @Override
     public void init() throws ServletException {
         try {
-            pool = (DataSource) new InitialContext().lookup("java:/comp/env/jdbc/TestDB");
+            pool = (DataSource) new InitialContext().lookup("java:/comp/env/jdbc/pos_assignment");
+            logger.debug("DB Connection Initialized..");
 //            System.out.println(pool.getConnection());
 
         } catch (Exception e) {
@@ -107,9 +112,11 @@ public class PlaceOrderServlet extends HttpServlet {
             if (placeOrderBO.placeOrder(orderDTO, connection)) {
                 resp.setStatus(HttpServletResponse.SC_CREATED);
                 resp.getWriter().write("Order placed successfully !!");
+                logger.info("Order placed successfully !!");
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
                 resp.getWriter().write("Order placed failed !!");
+                logger.error("Order placed failed !!");
             }
 
         } catch (Exception e) {
